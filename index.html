@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian &mdash; Banking Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loader-ledger">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <p>Reconciling your ledger&hellip;</p>
+</div>
+
+<button id="mobileNavToggle" class="mobile-nav-toggle" aria-label="Open menu">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path d="M14 2L26 8V12L14 18L2 12V8L14 2Z" fill="url(#g1)"/>
+          <path d="M6 14V22L14 26V18L6 14Z" fill="#3ECF8E" opacity="0.85"/>
+          <path d="M22 14V22L14 26V18L22 14Z" fill="#F2A93B" opacity="0.85"/>
+          <defs><linearGradient id="g1" x1="2" y1="2" x2="26" y2="18"><stop stop-color="#3ECF8E"/><stop offset="1" stop-color="#2E9EF2"/></linearGradient></defs>
+        </svg>
+      </div>
+      <span class="brand-name">Meridian</span>
+      <button class="sidebar-collapse-btn" id="collapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <nav class="side-nav" aria-label="Primary">
+      <ul>
+        <li><a href="#dashboard" class="nav-link active" data-section="dashboard"><i data-ic="grid"></i><span>Dashboard</span></a></li>
+        <li><a href="#accounts" class="nav-link" data-section="accounts"><i data-ic="wallet"></i><span>My Accounts</span></a></li>
+        <li><a href="#transactions" class="nav-link" data-section="transactions"><i data-ic="list"></i><span>Transactions</span></a></li>
+        <li><a href="#cards" class="nav-link" data-section="cards"><i data-ic="card"></i><span>Cards</span></a></li>
+        <li><a href="#payments" class="nav-link" data-section="payments"><i data-ic="bolt"></i><span>Payments</span></a></li>
+        <li><a href="#transfer" class="nav-link" data-section="transfer"><i data-ic="send"></i><span>Transfer Money</span></a></li>
+        <li><a href="#analytics" class="nav-link" data-section="analytics"><i data-ic="chart"></i><span>Analytics</span></a></li>
+        <li><a href="#notifications" class="nav-link" data-section="notifications"><i data-ic="bell"></i><span>Notifications</span> <span class="nav-badge" id="navNotifBadge">3</span></a></li>
+        <li><a href="#settings" class="nav-link" data-section="settings"><i data-ic="gear"></i><span>Settings</span></a></li>
+        <li><a href="#help" class="nav-link" data-section="help"><i data-ic="help"></i><span>Help</span></a></li>
+      </ul>
+      <ul class="side-nav-footer">
+        <li><a href="#" id="logoutBtn" class="nav-link"><i data-ic="logout"></i><span>Logout</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-ledger-tape" aria-hidden="true">
+      <div class="tape-track"><span>ACCT ACTIVE</span><span>&middot;</span><span>SECURE 256-BIT</span><span>&middot;</span><span>MERIDIAN TRUST</span><span>&middot;</span></div>
+    </div>
+  </aside>
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+  <div class="main-col">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        <p class="page-datetime" id="pageDateTime">&mdash;</p>
+      </div>
+
+      <div class="topbar-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" id="globalSearch" placeholder="Search transactions, beneficiaries, help&hellip;" autocomplete="off">
+        <div class="search-suggestions" id="searchSuggestions"></div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle dark and light mode">
+          <svg id="themeIconSun" width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg id="themeIconMoon" width="19" height="19" viewBox="0 0 24 24" fill="none" style="display:none"><path d="M21 12.5A9 9 0 1111.5 3 7 7 0 0021 12.5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="icon-btn" id="notifBellBtn" title="Notifications" aria-label="Notifications">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="badge-dot" id="bellBadge">3</span>
+        </button>
+        <div class="topbar-divider"></div>
+        <div class="user-chip" id="userChip">
+          <div class="avatar" id="userAvatar">AR</div>
+          <div class="user-chip-text">
+            <span class="user-name" id="userNameTop">Ananya Rao</span>
+            <span class="user-sub">Premier Customer</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="notif-panel" id="notifPanel">
+      <div class="notif-panel-head">
+        <span>Notifications</span>
+        <button id="markAllRead">Mark all read</button>
+      </div>
+      <div id="notifList" class="notif-list"></div>
+    </div>
+
+    <main class="content" id="content">
+
+      <section class="page-section active" id="section-dashboard">
+
+        <div class="summary-grid" id="summaryGrid"></div>
+
+        <div class="dash-row">
+          <div class="panel cards-panel">
+            <div class="panel-head">
+              <h2>Your Cards</h2>
+              <a href="#cards" class="panel-link" data-section-link="cards">Manage all &rarr;</a>
+            </div>
+            <div class="bank-cards-row" id="bankCardsRow"></div>
+          </div>
+
+          <div class="panel quick-actions-panel">
+            <div class="panel-head"><h2>Quick Actions</h2></div>
+            <div class="quick-actions-grid">
+              <button class="qa-btn" data-modal="depositModal"><i data-ic="download"></i>Deposit Money</button>
+              <button class="qa-btn" data-modal="withdrawModal"><i data-ic="upload"></i>Withdraw Money</button>
+              <button class="qa-btn" data-section-link="transfer"><i data-ic="send"></i>Transfer Money</button>
+              <button class="qa-btn" data-section-link="payments"><i data-ic="bolt"></i>Pay Bills</button>
+              <button class="qa-btn" data-modal="rechargeModal"><i data-ic="phone"></i>Mobile Recharge</button>
+              <button class="qa-btn" data-modal="beneficiaryModal"><i data-ic="user-plus"></i>Add Beneficiary</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-row">
+          <div class="panel chart-panel">
+            <div class="panel-head">
+              <h2>Balance Growth</h2>
+              <span class="panel-tag">Last 6 months</span>
+            </div>
+            <canvas id="balanceGrowthChart" height="110"></canvas>
+          </div>
+          <div class="panel chart-panel">
+            <div class="panel-head">
+              <h2>Spending Categories</h2>
+              <span class="panel-tag">This month</span>
+            </div>
+            <canvas id="spendingDonutChart" height="110"></canvas>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Recent Transactions</h2>
+            <a href="#transactions" class="panel-link" data-section-link="transactions">View all &rarr;</a>
+          </div>
+          <div class="table-wrap">
+            <table class="ledger-table" id="recentTxTable">
+              <thead><tr><th>Date</th><th>Description</th><th>Category</th><th class="num">Amount</th><th>Status</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <section class="page-section" id="section-accounts">
+        <div class="panel">
+          <div class="panel-head"><h2>My Accounts</h2></div>
+          <div class="accounts-grid" id="accountsGrid"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Profile</h2></div>
+          <div class="profile-grid">
+            <div class="profile-photo-wrap">
+              <div class="avatar avatar-lg" id="profileAvatarLg">AR</div>
+            </div>
+            <div class="profile-fields" id="profileFields"></div>
+            <form class="edit-profile-form" id="editProfileForm">
+              <h3>Edit Profile</h3>
+              <div class="form-grid">
+                <label>Full Name <input type="text" id="editName" required></label>
+                <label>Email <input type="email" id="editEmail" required></label>
+                <label>Phone <input type="tel" id="editPhone" required></label>
+                <label>Address <input type="text" id="editAddress" required></label>
+              </div>
+              <button type="submit" class="btn-primary">Save changes</button>
+              <span class="form-msg" id="profileFormMsg"></span>
+            </form>
+          </div>
+        </div>
+      </section>
+      <section class="page-section" id="section-transactions">
+        <div class="panel">
+          <div class="panel-head panel-head-wrap">
+            <h2>Transaction History</h2>
+            <div class="tx-toolbar">
+              <input type="text" id="txSearch" placeholder="Search transactions&hellip;" class="tx-input">
+              <input type="date" id="txDateFilter" class="tx-input">
+              <select id="txTypeFilter" class="tx-input">
+                <option value="all">All types</option>
+                <option value="credit">Credit</option>
+                <option value="debit">Debit</option>
+              </select>
+              <select id="txSort" class="tx-input">
+                <option value="date-desc">Newest first</option>
+                <option value="date-asc">Oldest first</option>
+                <option value="amount-desc">Amount: high &rarr; low</option>
+                <option value="amount-asc">Amount: low &rarr; high</option>
+              </select>
+              <button class="btn-ghost" id="txExportBtn"><i data-ic="download"></i>Export CSV</button>
+              <button class="btn-ghost" id="txPrintBtn"><i data-ic="print"></i>Print</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="ledger-table" id="fullTxTable">
+              <thead>
+                <tr>
+                  <th>Date</th><th>Description</th><th>Transaction ID</th><th>Category</th>
+                  <th class="num">Credit</th><th class="num">Debit</th><th class="num">Balance</th><th>Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="tx-empty" id="txEmptyMsg" style="display:none">No transactions match your filters.</p>
+        </div>
+      </section>
+      <section class="page-section" id="section-cards">
+        <div class="panel">
+          <div class="panel-head"><h2>Your Cards</h2></div>
+          <div class="bank-cards-row bank-cards-row-lg" id="bankCardsRowFull"></div>
+        </div>
+      </section>
+      <section class="page-section" id="section-payments">
+        <div class="panel">
+          <div class="panel-head"><h2>Bill Payments</h2></div>
+          <div class="payments-grid" id="paymentsGrid"></div>
+        </div>
+      </section>
+      <section class="page-section" id="section-transfer">
+        <div class="panel panel-narrow">
+          <div class="panel-head"><h2>Transfer Money</h2></div>
+          <form class="transfer-form" id="transferForm">
+            <label>Recipient Name
+              <input type="text" id="tfName" placeholder="e.g. Rohit Sharma" required>
+              <span class="field-err" id="err-tfName"></span>
+            </label>
+            <label>Account Number
+              <input type="text" id="tfAccount" placeholder="10-16 digit account number" required>
+              <span class="field-err" id="err-tfAccount"></span>
+            </label>
+            <label>IFSC Code
+              <input type="text" id="tfIfsc" placeholder="e.g. MERB0001234" required>
+              <span class="field-err" id="err-tfIfsc"></span>
+            </label>
+            <label>Amount (₹)
+              <input type="number" id="tfAmount" placeholder="0.00" min="1" step="0.01" required>
+              <span class="field-err" id="err-tfAmount"></span>
+            </label>
+            <label class="full-row">Remarks (optional)
+              <input type="text" id="tfRemarks" placeholder="What's this for?">
+            </label>
+            <button type="submit" class="btn-primary full-row">Transfer Money</button>
+          </form>
+        </div>
+      </section>
+      <section class="page-section" id="section-analytics">
+        <div class="dash-row">
+          <div class="panel chart-panel"><div class="panel-head"><h2>Monthly Income</h2></div><canvas id="incomeBarChart" height="120"></canvas></div>
+          <div class="panel chart-panel"><div class="panel-head"><h2>Monthly Expenses</h2></div><canvas id="expenseBarChart" height="120"></canvas></div>
+        </div>
+        <div class="dash-row">
+          <div class="panel chart-panel"><div class="panel-head"><h2>Spending Categories</h2></div><canvas id="spendingDonutChart2" height="120"></canvas></div>
+          <div class="panel chart-panel"><div class="panel-head"><h2>Balance Growth</h2></div><canvas id="balanceGrowthChart2" height="120"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head panel-head-wrap">
+            <h2>Reports</h2>
+            <div class="tx-toolbar">
+              <button class="btn-ghost" id="reportCsvBtn"><i data-ic="download"></i>Download statement CSV</button>
+              <button class="btn-ghost" id="reportPrintBtn"><i data-ic="print"></i>Print report</button>
+            </div>
+          </div>
+          <div class="reports-grid" id="reportsGrid"></div>
+        </div>
+      </section>
+      <section class="page-section" id="section-notifications">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>All Notifications</h2>
+            <button class="btn-ghost" id="markAllReadPage">Mark all read</button>
+          </div>
+          <div class="notif-list notif-list-page" id="notifListPage"></div>
+        </div>
+      </section>
+      <section class="page-section" id="section-settings">
+        <div class="panel panel-narrow">
+          <div class="panel-head"><h2>Settings</h2></div>
+          <div class="settings-list">
+            <div class="settings-row">
+              <div><strong>Dark mode</strong><p>Switch between light and dark themes.</p></div>
+              <label class="switch"><input type="checkbox" id="settingsDarkToggle"><span class="slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <div><strong>Notifications</strong><p>Receive alerts for account activity.</p></div>
+              <label class="switch"><input type="checkbox" id="settingsNotifToggle" checked><span class="slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <div><strong>Language</strong><p>Choose your display language.</p></div>
+              <select id="settingsLanguage" class="tx-input">
+                <option value="en">English</option>
+                <option value="hi">हिन्दी (Hindi)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+                <option value="es">Español</option>
+              </select>
+            </div>
+            <div class="settings-row">
+              <div><strong>Currency</strong><p>Amounts will display in this currency.</p></div>
+              <select id="settingsCurrency" class="tx-input">
+                <option value="INR">₹ INR</option>
+                <option value="USD">$ USD</option>
+                <option value="EUR">€ EUR</option>
+                <option value="GBP">£ GBP</option>
+              </select>
+            </div>
+            <div class="settings-row">
+              <div><strong>Change password</strong><p>Demo only &mdash; no data is sent anywhere.</p></div>
+              <button class="btn-ghost" id="changePassBtn">Change password</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="page-section" id="section-help">
+        <div class="panel panel-narrow">
+          <div class="panel-head"><h2>Help &amp; Support</h2></div>
+          <div class="help-faq">
+            <details open><summary>How do I transfer money?</summary><p>Go to <strong>Transfer Money</strong> in the sidebar, fill in the recipient's details and amount, then confirm. You'll see a success toast once it's done.</p></details>
+            <details><summary>How do I freeze my card?</summary><p>Open <strong>Cards</strong>, and use the Freeze Card button under the card you want to lock. Unfreeze any time the same way.</p></details>
+            <details><summary>Where can I download my statement?</summary><p>Visit <strong>Analytics &rarr; Reports</strong> and choose Download statement CSV, or print directly from Transactions.</p></details>
+            <details><summary>Is my data stored anywhere?</summary><p>This is a demo dashboard. All data lives only in your browser's local storage &mdash; nothing is sent to a server.</p></details>
+          </div>
+          <p class="help-contact">Still stuck? This is a portfolio demo, so support is simulated &mdash; but in a real bank app, this is where a live-chat or call-back option would live.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="app-footer">
+      <span>&copy; 2026 Meridian Bank &middot; Demo dashboard for portfolio purposes only &middot; No real financial data is processed.</span>
+      <button id="backToTop" class="back-to-top" aria-label="Back to top">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </footer>
+  </div>
+</div>
+<div class="modal-overlay" id="modalOverlay"></div>
+
+<div class="modal" id="depositModal">
+  <div class="modal-head"><h3>Deposit Money</h3><button class="modal-close" data-close>&times;</button></div>
+  <form id="depositForm">
+    <label>Amount (₹) <input type="number" id="depositAmount" min="1" step="0.01" required></label>
+    <label>Remarks <input type="text" id="depositRemarks" placeholder="e.g. Cash deposit"></label>
+    <button type="submit" class="btn-primary full-row">Confirm Deposit</button>
+  </form>
+</div>
+
+<div class="modal" id="withdrawModal">
+  <div class="modal-head"><h3>Withdraw Money</h3><button class="modal-close" data-close>&times;</button></div>
+  <form id="withdrawForm">
+    <label>Amount (₹) <input type="number" id="withdrawAmount" min="1" step="0.01" required></label>
+    <label>Remarks <input type="text" id="withdrawRemarks" placeholder="e.g. ATM withdrawal"></label>
+    <button type="submit" class="btn-primary full-row">Confirm Withdrawal</button>
+  </form>
+</div>
+
+<div class="modal" id="rechargeModal">
+  <div class="modal-head"><h3>Mobile Recharge</h3><button class="modal-close" data-close>&times;</button></div>
+  <form id="rechargeForm">
+    <label>Mobile Number <input type="tel" id="rechargeNumber" placeholder="10-digit number" required></label>
+    <label>Operator
+      <select id="rechargeOperator"><option>Airtel</option><option>Jio</option><option>Vi</option><option>BSNL</option></select>
+    </label>
+    <label>Amount (₹) <input type="number" id="rechargeAmount" min="10" step="1" required></label>
+    <button type="submit" class="btn-primary full-row">Recharge Now</button>
+  </form>
+</div>
+
+<div class="modal" id="beneficiaryModal">
+  <div class="modal-head"><h3>Add Beneficiary</h3><button class="modal-close" data-close>&times;</button></div>
+  <form id="beneficiaryForm">
+    <label>Beneficiary Name <input type="text" id="benName" required></label>
+    <label>Account Number <input type="text" id="benAccount" required></label>
+    <label>IFSC Code <input type="text" id="benIfsc" required></label>
+    <label>Nickname (optional) <input type="text" id="benNickname"></label>
+    <button type="submit" class="btn-primary full-row">Add Beneficiary</button>
+  </form>
+</div>
+
+<div class="modal" id="billPayModal">
+  <div class="modal-head"><h3 id="billPayTitle">Pay Bill</h3><button class="modal-close" data-close>&times;</button></div>
+  <form id="billPayForm">
+    <label>Biller <input type="text" id="billPayBiller" readonly></label>
+    <label>Consumer / Account No. <input type="text" id="billPayConsumer" placeholder="e.g. 400291823" required></label>
+    <label>Amount (₹) <input type="number" id="billPayAmount" min="1" step="0.01" required></label>
+    <button type="submit" class="btn-primary full-row">Pay Now</button>
+  </form>
+</div>
+
+<div class="modal modal-sm" id="passwordModal">
+  <div class="modal-head"><h3>Change Password</h3><button class="modal-close" data-close>&times;</button></div>
+  <form id="passwordForm">
+    <label>Current Password <input type="password" required></label>
+    <label>New Password <input type="password" required minlength="6"></label>
+    <label>Confirm New Password <input type="password" required minlength="6"></label>
+    <button type="submit" class="btn-primary full-row">Update Password</button>
+  </form>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -4,6 +4,8 @@ A fully functional, front-end-only banking dashboard built with **HTML5, CSS3, a
 
 ![status](https://img.shields.io/badge/status-demo-3ECF8E) ![stack](https://img.shields.io/badge/stack-HTML%20%7C%20CSS%20%7C%20JS-121A2B)
 
+### Deployment page :https://eren12005.github.io/Banking_Dashboard_Website/
+
 ## Project Overview
 
 Meridian is a portfolio-grade simulation of an online banking dashboard: account balances, cards, transactions, transfers, bill payments, analytics, notifications, and settings — all wired up to real, working interactions. Every number you see is generated on first load and then persisted to `localStorage`, so deposits, withdrawals, transfers, and bill payments all update your balance and transaction history live, and survive a page refresh.
